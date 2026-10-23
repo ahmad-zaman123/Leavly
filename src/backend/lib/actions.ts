@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/backend/db";
 import { holidays, leaveTypes, leaves, settings, users } from "@/backend/db/schema";
 import { clearSession, createSession, requireAdmin, requireUser } from "./auth";
-import { countWorkingDays, fmtDays, fmtRange } from "./dates";
+import { countWorkingDays, fmtDate, fmtDays, fmtRange } from "./dates";
 import { ensureDefaults, getConfig } from "./data";
 
 export type LeaveDTO = { id: number; userId: number; userName: string; typeKey: string; fromDate: string; toDate: string; note: string; halfDay: boolean };

@@ -120,7 +120,7 @@ export default async function SettingsPage() {
             ) : (
               <div className="empty">No holidays added yet.</div>
             )}
-            <AddHolidayForm weekend={cfg.weekend} holidays={Object.keys(cfg.holidayMap)} today={todayIso()} />
+            <AddHolidayForm key={cfg.holidays.length} weekend={cfg.weekend} holidays={cfg.holidayMap} today={todayIso()} />
           </div>
         </div>
       </section>
