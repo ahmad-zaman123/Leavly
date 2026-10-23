@@ -1,0 +1,29 @@
+{
+  "name": "leavly",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "db:push": "drizzle-kit push",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\""
+  },
+  "dependencies": {
+    "@libsql/client": "^0.15.9",
+    "bcryptjs": "^3.0.2",
+    "drizzle-orm": "^0.44.2",
+    "jose": "^6.0.11",
+    "next": "^15.3.4",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "drizzle-kit": "^0.31.1",
+    "typescript": "^5.8.0",
+    "prettier": "^3.5.3"
+  }
+}
