@@ -9,3 +9,4 @@ local.db-*
 next-env.d.ts
 *.log
 pgdata
+pgdata-test

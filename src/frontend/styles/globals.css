@@ -2596,3 +2596,30 @@ form.req label.xchip,
 .contents {
   display: contents;
 }
+
+/* ---------- google sign-in ---------- */
+.googlebtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 14px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+}
+.or {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+.or::before,
+.or::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}

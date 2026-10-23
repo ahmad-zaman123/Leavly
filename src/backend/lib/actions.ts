@@ -5,7 +5,7 @@ import { and, eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/backend/db";
-import { holidays, leaveTypes, leaves, settings, users } from "@/backend/db/schema";
+import { holidays, leaveTypes, leaves, loginAttempts, settings, users } from "@/backend/db/schema";
 import { clearSession, createSession, requireAdmin, requireUser } from "./auth";
 import { countWorkingDays, fmtDate, fmtDays, fmtRange } from "./dates";
 import { ensureDefaults, getConfig } from "./data";
@@ -40,12 +40,34 @@ export async function setup(_prev: FormState, fd: FormData): Promise<FormState> 
   redirect("/");
 }
 
+const MAX_FAILURES = 5;
+const LOCK_SECONDS = 60;
+
 export async function login(_prev: FormState, fd: FormData): Promise<FormState> {
   const email = str(fd, "email").toLowerCase();
   const password = String(fd.get("password") ?? "");
+  if (!email) return { error: "Enter your email." };
+  const now = Date.now();
+  const attempt = await db.query.loginAttempts.findFirst({ where: eq(loginAttempts.email, email) });
+  if (attempt?.lockedUntil && Date.parse(attempt.lockedUntil) > now) {
+    const wait = Math.ceil((Date.parse(attempt.lockedUntil) - now) / 1000);
+    return { error: `Too many failed attempts. Try again in ${wait} second${wait === 1 ? "" : "s"}.` };
+  }
   const u = await db.query.users.findFirst({ where: eq(users.email, email) });
-  if (!u || !(await bcrypt.compare(password, u.passwordHash))) return { error: "Wrong email or password." };
+  const ok = !!u && (await bcrypt.compare(password, u.passwordHash));
+  if (!ok) {
+    const failures = (attempt?.lockedUntil && Date.parse(attempt.lockedUntil) <= now ? 0 : (attempt?.failures ?? 0)) + 1;
+    const lockedUntil = failures >= MAX_FAILURES ? new Date(now + LOCK_SECONDS * 1000).toISOString() : null;
+    await db
+      .insert(loginAttempts)
+      .values({ email, failures, lockedUntil, updatedAt: new Date(now).toISOString() })
+      .onConflictDoUpdate({ target: loginAttempts.email, set: { failures, lockedUntil, updatedAt: new Date(now).toISOString() } });
+    if (lockedUntil) return { error: `Too many failed attempts. Try again in ${LOCK_SECONDS} seconds.` };
+    const left = MAX_FAILURES - failures;
+    return { error: `Wrong email or password.${left <= 2 ? ` ${left} attempt${left === 1 ? "" : "s"} left before a short lock.` : ""}` };
+  }
   if (!u.active) return { error: "This account has been deactivated. Ask your admin." };
+  if (attempt) await db.delete(loginAttempts).where(eq(loginAttempts.email, email));
   await createSession(u.id, { mustChangePassword: u.mustChangePassword });
   redirect(u.mustChangePassword ? "/welcome" : "/");
 }

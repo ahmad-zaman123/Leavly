@@ -72,6 +72,7 @@ Open `/register`. The **first account becomes the admin**. After that nobody can
 | `npm run build` / `npm start` | Production build and server |
 | `npm run db:push` | Create or update the database tables from the schema |
 | `npm run format` | Prettier over `src/` |
+| `npm run test:e2e` | End-to-end suite in headless Chromium against a fresh local build |
 
 </details>
 
@@ -140,6 +141,17 @@ Light and dark themes, a bottom-sheet form and floating button on phones, and a 
 <p align="center">
   <img src="docs/screenshots/admin-away.png" alt="Admin monthly away report" width="860" />
 </p>
+
+## 🧪 Tests
+
+An end-to-end suite drives the real app in headless Chromium: it adds people, takes them through first sign-in, logs leave of every shape (past, today, ranges over weekends and holidays, half days, across the leave-year boundary), checks balances, member isolation, every admin screen and setting, the login lock, phone layout and error pages. Dates are chosen relative to the day it runs.
+
+```bash
+npx playwright install chromium   # once
+npm run test:e2e                  # builds, seeds an embedded test database, starts a server, runs, cleans up
+```
+
+To run it against a deployed instance, seed the QA accounts from `tests/db.js` into that database and run `BASE=https://your-site npm run test:e2e:live`. The same suite runs in GitHub Actions on every push.
 
 ## 🛠️ Tech stack
 

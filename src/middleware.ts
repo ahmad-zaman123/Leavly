@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
-const PUBLIC = ["/login", "/register"];
+const PUBLIC = ["/login", "/register", "/api/auth/"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -27,7 +27,7 @@ export async function middleware(req: NextRequest) {
     url.search = "";
     return NextResponse.redirect(url);
   }
-  if (signedIn && isPublic) {
+  if (signedIn && isPublic && !pathname.startsWith("/api/auth/")) {
     const url = req.nextUrl.clone();
     url.pathname = mustChange ? "/welcome" : "/";
     url.search = "";

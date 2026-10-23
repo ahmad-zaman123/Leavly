@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "db:push": "drizzle-kit push",
-    "format": "prettier --write \"src/**/*.{ts,tsx,css}\""
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
+    "test:e2e": "node tests/run.js",
+    "test:e2e:live": "node tests/e2e.js"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.11",
@@ -25,6 +27,7 @@
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
     "drizzle-kit": "^0.31.1",
+    "playwright": "^1.63.0",
     "prettier": "^3.5.3",
     "typescript": "^5.8.0"
   }

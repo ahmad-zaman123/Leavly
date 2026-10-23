@@ -11,7 +11,9 @@ import * as schema from "./schema";
  */
 export type Db = NodePgDatabase<typeof schema>;
 
-const url = process.env.DATABASE_URL ?? "pglite://./pgdata";
+// Tolerate quotes or whitespace pasted around the value in a hosting dashboard.
+const raw = (process.env.DATABASE_URL ?? "").trim().replace(/^["']|["']$/g, "");
+const url = raw || "pglite://./pgdata";
 export const isRemote = /^postgres(ql)?:\/\//.test(url);
 
 const g = globalThis as unknown as { __leavlyDb?: Db };
@@ -29,6 +31,11 @@ function create(): Db {
       ssl: local ? undefined : { rejectUnauthorized: false },
     });
     return drizzleNodePg(pool, { schema });
+  }
+  if (process.env.VERCEL) {
+    // On Vercel never fall back to the embedded database: say exactly what is wrong instead.
+    const shown = raw ? `starts with "${raw.slice(0, 12)}…" (${raw.length} chars)` : "is not set";
+    throw new Error(`DATABASE_URL must be a postgresql:// connection string in production, but it ${shown}. Set it in the hosting dashboard and redeploy.`);
   }
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { PGlite } = require("@electric-sql/pglite") as typeof import("@electric-sql/pglite");
