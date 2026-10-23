@@ -6,12 +6,18 @@
 </p>
 
 <p align="center">
+  <a href="https://leavly.vercel.app"><img src="https://img.shields.io/badge/live-leavly.vercel.app-0d6b76?logo=vercel&logoColor=white&style=flat-square" alt="Live site" /></a>
+  <a href="https://github.com/ahmad-zaman123/leavly/actions/workflows/e2e.yml"><img src="https://github.com/ahmad-zaman123/leavly/actions/workflows/e2e.yml/badge.svg" alt="e2e tests" /></a>
   <img src="https://img.shields.io/badge/Next.js-15-000?logo=nextdotjs&logoColor=white&style=flat-square" alt="Next.js 15" />
   <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black&style=flat-square" alt="React 19" />
   <img src="https://img.shields.io/badge/Drizzle-ORM-C5F74F?logo=drizzle&logoColor=black&style=flat-square" alt="Drizzle ORM" />
   <img src="https://img.shields.io/badge/Postgres-Supabase-3FCF8E?logo=supabase&logoColor=white&style=flat-square" alt="Postgres / Supabase" />
   <img src="https://img.shields.io/badge/deploy-Vercel-000?logo=vercel&logoColor=white&style=flat-square" alt="Vercel" />
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="MIT license" /></a>
+</p>
+
+<p align="center">
+  <a href="https://leavly.vercel.app"><b>Live site → leavly.vercel.app</b></a>
 </p>
 
 <p align="center">
