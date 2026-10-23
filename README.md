@@ -9,7 +9,7 @@
   <img src="https://img.shields.io/badge/Next.js-15-000?logo=nextdotjs&logoColor=white&style=flat-square" alt="Next.js 15" />
   <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black&style=flat-square" alt="React 19" />
   <img src="https://img.shields.io/badge/Drizzle-ORM-C5F74F?logo=drizzle&logoColor=black&style=flat-square" alt="Drizzle ORM" />
-  <img src="https://img.shields.io/badge/SQLite-Turso-4169E1?logo=sqlite&logoColor=white&style=flat-square" alt="SQLite / Turso" />
+  <img src="https://img.shields.io/badge/Postgres-Supabase-3FCF8E?logo=supabase&logoColor=white&style=flat-square" alt="Postgres / Supabase" />
   <img src="https://img.shields.io/badge/deploy-Vercel-000?logo=vercel&logoColor=white&style=flat-square" alt="Vercel" />
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="MIT license" /></a>
 </p>
@@ -38,14 +38,14 @@ An informal leave tracker for a group of colleagues who do not have an HR system
 
 ## 🚀 Quick start
 
-**Prerequisites:** Node 18+. Nothing else; the local database is a SQLite file.
+**Prerequisites:** Node 18+. Nothing else; local development uses an embedded Postgres in a folder.
 
 ```bash
 git clone https://github.com/ahmad-zaman123/leavly.git
 cd leavly
-cp .env.example .env      # defaults to a local SQLite file
+cp .env.example .env      # defaults to the embedded local database
 npm install
-npm run db:push           # creates the tables in local.db
+npm run db:push           # creates the tables in ./pgdata
 npm run dev               # http://localhost:3000
 ```
 
@@ -57,8 +57,7 @@ Open `/register`. The **first account becomes the admin**. After that nobody can
 
 | Key | Required | Notes |
 |---|---|---|
-| `DATABASE_URL` | **yes** | `file:local.db` locally, or a Turso `libsql://…` URL in production. |
-| `DATABASE_AUTH_TOKEN` | prod | Turso auth token. Leave empty for the local file. |
+| `DATABASE_URL` | **yes** | `pglite://./pgdata` locally (embedded, no server), or a Postgres URL in production. |
 | `AUTH_SECRET` | **prod** | Long random string used to sign sessions. `openssl rand -base64 32`. |
 
 </details>
@@ -147,51 +146,50 @@ Light and dark themes, a bottom-sheet form and floating button on phones, and a 
 | Layer | Tech |
 |---|---|
 | **Framework** | Next.js 15 (App Router, server actions), React 19 |
-| **Database** | SQLite via libsql, Drizzle ORM; Turso in production |
+| **Database** | Postgres with Drizzle ORM: Supabase in production, embedded PGlite for local development |
 | **Auth** | Signed-cookie sessions (jose), bcrypt password hashing |
 | **Styling** | Hand-written CSS with light and dark theme tokens |
-| **Deployment** | Vercel + Turso |
+| **Deployment** | Vercel + Supabase |
 
 ## 🗂️ Project structure
 
 ```
 leavly/
 ├── src/
-│   ├── app/
+│   ├── app/                    routes only (Next.js needs them here)
 │   │   ├── page.tsx            dashboard
-│   │   ├── leaves/             my leaves
-│   │   ├── account/            change password
+│   │   ├── leaves/ · account/  my leaves · change password
 │   │   ├── admin/              team · away · settings
 │   │   └── login · register · welcome
-│   ├── components/             dashboard, forms, calendar, date picker, admin
-│   ├── db/                     Drizzle schema and client
-│   ├── lib/
-│   │   ├── actions.ts          all server actions
-│   │   ├── auth.ts             sessions
-│   │   ├── dates.ts            working-day and leave-year maths
-│   │   └── data.ts             queries and balances
+│   ├── frontend/
+│   │   ├── components/         dashboard, forms, calendar, date picker, admin UI
+│   │   ├── styles/globals.css  theme tokens, light and dark
+│   │   └── lib/colors.ts       leave-type colours
+│   ├── backend/
+│   │   ├── db/                 Drizzle schema and database client
+│   │   └── lib/
+│   │       ├── actions.ts      all server actions
+│   │       ├── auth.ts         sessions
+│   │       ├── data.ts         queries and balances
+│   │       └── dates.ts        working-day and leave-year maths
 │   └── middleware.ts           route guard
 └── public/                     icons and manifest
 ```
 
 ## ☁️ Deployment
 
-The app needs a hosted database. [Turso](https://turso.tech) is hosted SQLite that uses the same driver and has a free tier.
+The app needs a hosted Postgres. [Supabase](https://supabase.com) works well and has a free tier.
 
-1. Create the database and get its credentials:
-   ```bash
-   turso db create leavly
-   turso db show leavly --url        # libsql://…
-   turso db tokens create leavly     # the auth token
-   ```
+1. Create a Supabase project. In **Project settings → Database → Connection string** copy the **Transaction pooler** URL (port 6543). It looks like
+   `postgresql://postgres.<ref>:<password>@aws-0-<region>.pooler.supabase.com:6543/postgres`.
+   Use the pooler, not the direct host: the direct host is IPv6-only and unreachable from Vercel.
 2. Create the tables in it from your machine:
    ```bash
-   DATABASE_URL=libsql://… DATABASE_AUTH_TOKEN=… npm run db:push
+   DATABASE_URL='postgresql://…pooler.supabase.com:6543/postgres' npm run db:push
    ```
-3. Import the repository in [Vercel](https://vercel.com/new) with the Next.js preset and set `DATABASE_URL`, `DATABASE_AUTH_TOKEN` and `AUTH_SECRET`.
+3. Import the repository in [Vercel](https://vercel.com/new) with the Next.js preset and set `DATABASE_URL` and `AUTH_SECRET`.
+   Set the function region to the one your Supabase project is in (for example `sin1` for ap-southeast-1) so every query is a short hop.
 4. Deploy, open the site, create the first account at `/register`, and add everyone else from the Admin page.
-
-Turso is also available in Vercel's Marketplace under Storage, which fills in the two database variables for you.
 
 ## 📄 License
 

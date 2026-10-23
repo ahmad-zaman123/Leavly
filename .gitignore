@@ -8,3 +8,4 @@ local.db-*
 *.tsbuildinfo
 next-env.d.ts
 *.log
+pgdata

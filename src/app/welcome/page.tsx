@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
-import AuthShell from "@/components/AuthShell";
-import FirstPasswordForm from "@/components/FirstPasswordForm";
-import { requireUser } from "@/lib/auth";
-import { logout } from "@/lib/actions";
+import AuthShell from "@/frontend/components/AuthShell";
+import FirstPasswordForm from "@/frontend/components/FirstPasswordForm";
+import { requireUser } from "@/backend/lib/auth";
+import { logout } from "@/backend/lib/actions";
 
 export default async function WelcomePage() {
   const user = await requireUser();

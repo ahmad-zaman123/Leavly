@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react";
 import PasswordInput from "./PasswordInput";
-import { setFirstPassword, type FormState } from "@/lib/actions";
+import { setFirstPassword, type FormState } from "@/backend/lib/actions";
 
 export default function FirstPasswordForm() {
   const [state, formAction, pending] = useActionState<FormState, FormData>(setFirstPassword, {});

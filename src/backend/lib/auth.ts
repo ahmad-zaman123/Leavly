@@ -2,8 +2,8 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
-import { db } from "@/db";
-import { users, type User } from "@/db/schema";
+import { db } from "@/backend/db";
+import { users, type User } from "@/backend/db/schema";
 
 export const SESSION_COOKIE = "session";
 

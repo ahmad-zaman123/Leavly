@@ -1,6 +1,6 @@
 import { asc, desc, eq } from "drizzle-orm";
-import { db } from "@/db";
-import { holidays, leaveTypes, leaves, settings, users, type Leave, type LeaveType, type User } from "@/db/schema";
+import { db } from "@/backend/db";
+import { holidays, leaveTypes, leaves, settings, users, type Leave, type LeaveType, type User } from "@/backend/db/schema";
 import { leaveDays, leaveYearWindow, type WorkCalendar } from "./dates";
 
 /** 24 days a year in total: 14 casual, 10 sick. Admins can change these on the Admin page. */
@@ -9,18 +9,22 @@ export const DEFAULT_TYPES = [
   { key: "sick", label: "Sick", days: 10, position: 1 },
 ];
 
+let defaultsChecked = false;
+
+/** Seeds the settings row and default leave types once per process; later calls are free. */
 export async function ensureDefaults(): Promise<void> {
-  const row = await db.query.settings.findFirst({ where: eq(settings.id, 1) });
-  if (!row) {
+  if (defaultsChecked) return;
+  const [row, types] = await Promise.all([
+    db.query.settings.findFirst({ where: eq(settings.id, 1) }),
+    db.select({ id: leaveTypes.id }).from(leaveTypes).limit(1),
+  ]);
+  if (!row)
     await db
       .insert(settings)
       .values({ id: 1, weekend: [0, 6] })
       .onConflictDoNothing();
-  }
-  const types = await db.select({ id: leaveTypes.id }).from(leaveTypes).limit(1);
-  if (types.length === 0) {
-    await db.insert(leaveTypes).values(DEFAULT_TYPES).onConflictDoNothing();
-  }
+  if (types.length === 0) await db.insert(leaveTypes).values(DEFAULT_TYPES).onConflictDoNothing();
+  defaultsChecked = true;
 }
 
 export type Config = {
@@ -50,9 +54,12 @@ export function expandHolidays(list: { date: string; label: string; yearly: bool
 
 export async function getConfig(): Promise<Config> {
   await ensureDefaults();
-  const row = (await db.query.settings.findFirst({ where: eq(settings.id, 1) }))!;
-  const types = await db.select().from(leaveTypes).orderBy(asc(leaveTypes.position), asc(leaveTypes.id));
-  const hols = await db.select().from(holidays).orderBy(asc(holidays.date));
+  // Three independent reads; run them together so a remote database costs one round trip, not three.
+  const [row, types, hols] = await Promise.all([
+    db.query.settings.findFirst({ where: eq(settings.id, 1) }).then((r) => r!),
+    db.select().from(leaveTypes).orderBy(asc(leaveTypes.position), asc(leaveTypes.id)),
+    db.select().from(holidays).orderBy(asc(holidays.date)),
+  ]);
   const thisYear = new Date().getFullYear();
   const holidayMap = expandHolidays(hols, thisYear - 2, thisYear + 3);
   return {

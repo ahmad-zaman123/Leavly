@@ -1,7 +1,7 @@
-import AwayMonth from "@/components/AwayMonth";
-import { requireAdmin } from "@/lib/auth";
-import { getConfig, getTeamLeaves } from "@/lib/data";
-import { todayIso } from "@/lib/dates";
+import AwayMonth from "@/frontend/components/AwayMonth";
+import { requireAdmin } from "@/backend/lib/auth";
+import { getConfig, getTeamLeaves } from "@/backend/lib/data";
+import { todayIso } from "@/backend/lib/dates";
 
 export default async function AwayPage({ searchParams }: { searchParams: Promise<{ month?: string }> }) {
   await requireAdmin();

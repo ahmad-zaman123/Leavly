@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import PasswordInput from "./PasswordInput";
-import type { FormState } from "@/lib/actions";
+import type { FormState } from "@/backend/lib/actions";
 
 type Field = {
   name: string;

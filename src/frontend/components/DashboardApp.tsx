@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Avatar from "./Avatar";
 import LogForm, { type Draft, type TypeInfo } from "./LogForm";
-import { removeLeave, restoreLeave, type LeaveDTO } from "@/lib/actions";
+import { removeLeave, restoreLeave, type LeaveDTO } from "@/backend/lib/actions";
 import {
   DOW,
   MONTHS,
@@ -22,8 +22,8 @@ import {
   leaveYearWindow,
   parseDate,
   type WorkCalendar,
-} from "@/lib/dates";
-import { typeColorVar } from "@/lib/colors";
+} from "@/backend/lib/dates";
+import { typeColorVar } from "@/frontend/lib/colors";
 
 export type TypeProp = { key: string; label: string; allowance: number; colorIndex: number };
 

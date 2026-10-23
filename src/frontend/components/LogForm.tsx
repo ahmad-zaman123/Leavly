@@ -1,9 +1,9 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState } from "react";
-import { logLeave, type FormState, type LeaveDTO } from "@/lib/actions";
-import { DOW, countWorkingDays, fmtDate, fmtDays, fmtRange, leaveDays, leaveYearOf, parseDate, isoDate, type WorkCalendar } from "@/lib/dates";
-import { typeColorVar } from "@/lib/colors";
+import { logLeave, type FormState, type LeaveDTO } from "@/backend/lib/actions";
+import { DOW, countWorkingDays, fmtDate, fmtDays, fmtRange, leaveDays, leaveYearOf, parseDate, isoDate, type WorkCalendar } from "@/backend/lib/dates";
+import { typeColorVar } from "@/frontend/lib/colors";
 import DatePicker from "./DatePicker";
 
 export type TypeInfo = { key: string; label: string; allowance: number; used: number; colorIndex: number };

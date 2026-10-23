@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useState } from "react";
 import Avatar from "./Avatar";
-import type { LeaveDTO } from "@/lib/actions";
-import { DOW, MONTHS, fmtDate, isWorkingDay, isoDate, parseDate, type WorkCalendar } from "@/lib/dates";
-import { typeColorVar } from "@/lib/colors";
+import type { LeaveDTO } from "@/backend/lib/actions";
+import { DOW, MONTHS, fmtDate, isWorkingDay, isoDate, parseDate, type WorkCalendar } from "@/backend/lib/dates";
+import { typeColorVar } from "@/frontend/lib/colors";
 
 type T = { key: string; label: string; colorIndex: number };
 

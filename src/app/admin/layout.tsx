@@ -1,4 +1,4 @@
-import AdminTabs from "@/components/AdminTabs";
+import AdminTabs from "@/frontend/components/AdminTabs";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (

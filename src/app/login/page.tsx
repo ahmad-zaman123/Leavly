@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { sql } from "drizzle-orm";
-import AuthForm from "@/components/AuthForm";
-import AuthShell from "@/components/AuthShell";
-import { db } from "@/db";
-import { users } from "@/db/schema";
-import { login } from "@/lib/actions";
-import { ensureDefaults } from "@/lib/data";
+import AuthForm from "@/frontend/components/AuthForm";
+import AuthShell from "@/frontend/components/AuthShell";
+import { db } from "@/backend/db";
+import { users } from "@/backend/db/schema";
+import { login } from "@/backend/lib/actions";
+import { ensureDefaults } from "@/backend/lib/data";
 
 export default async function LoginPage() {
   await ensureDefaults();

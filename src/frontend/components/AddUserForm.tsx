@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import PasswordInput from "./PasswordInput";
-import { addUser, type FormState } from "@/lib/actions";
+import { addUser, type FormState } from "@/backend/lib/actions";
 
 export default function AddUserForm() {
   const [state, formAction, pending] = useActionState<FormState, FormData>(addUser, {});

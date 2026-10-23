@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Avatar from "./Avatar";
 import { AutoSubmitInput, AutoSubmitSelect } from "./AutoSubmit";
-import { setActive, setAllowance, setRole, setUserPassword } from "@/lib/actions";
-import { typeColorVar } from "@/lib/colors";
+import { setActive, setAllowance, setRole, setUserPassword } from "@/backend/lib/actions";
+import { typeColorVar } from "@/frontend/lib/colors";
 
 export type Person = {
   id: number;

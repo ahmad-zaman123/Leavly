@@ -1,14 +1,14 @@
 import { asc } from "drizzle-orm";
-import AddPerson from "@/components/AddPerson";
-import ThisWeek from "@/components/ThisWeek";
-import { AutoSubmitSelect } from "@/components/AutoSubmit";
-import TeamTable, { type Person, type TypeCol } from "@/components/TeamTable";
-import UpcomingList from "@/components/UpcomingList";
-import { db } from "@/db";
-import { users } from "@/db/schema";
-import { requireAdmin } from "@/lib/auth";
-import { allowanceFor, getConfig, getTeamLeaves, usageFor } from "@/lib/data";
-import { leaveYearLabel, leaveYearOf, todayIso } from "@/lib/dates";
+import AddPerson from "@/frontend/components/AddPerson";
+import ThisWeek from "@/frontend/components/ThisWeek";
+import { AutoSubmitSelect } from "@/frontend/components/AutoSubmit";
+import TeamTable, { type Person, type TypeCol } from "@/frontend/components/TeamTable";
+import UpcomingList from "@/frontend/components/UpcomingList";
+import { db } from "@/backend/db";
+import { users } from "@/backend/db/schema";
+import { requireAdmin } from "@/backend/lib/auth";
+import { allowanceFor, getConfig, getTeamLeaves, usageFor } from "@/backend/lib/data";
+import { leaveYearLabel, leaveYearOf, todayIso } from "@/backend/lib/dates";
 
 export default async function AdminPage({ searchParams }: { searchParams: Promise<{ year?: string }> }) {
   const admin = await requireAdmin();

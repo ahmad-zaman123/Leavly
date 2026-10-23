@@ -3,9 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import Avatar from "./Avatar";
-import { removeLeave, restoreLeave, type LeaveDTO } from "@/lib/actions";
-import { fmtDays, fmtRange, leaveDays, type WorkCalendar } from "@/lib/dates";
-import { typeColorVar } from "@/lib/colors";
+import { removeLeave, restoreLeave, type LeaveDTO } from "@/backend/lib/actions";
+import { fmtDays, fmtRange, leaveDays, type WorkCalendar } from "@/backend/lib/dates";
+import { typeColorVar } from "@/frontend/lib/colors";
 
 type T = { key: string; label: string; colorIndex: number };
 

@@ -1,10 +1,10 @@
-import AddHolidayForm from "@/components/AddHolidayForm";
-import { AutoSubmitInput, AutoSubmitSelect } from "@/components/AutoSubmit";
-import { addType, deleteHoliday, deleteType, setHolidayYearly, setWeekend, setYearStart, updateType } from "@/lib/actions";
-import { requireAdmin } from "@/lib/auth";
-import { getConfig } from "@/lib/data";
-import { DOW, MONTHS, fmtDate, leaveYearSpan, leaveYearOf, todayIso } from "@/lib/dates";
-import { typeColorVar } from "@/lib/colors";
+import AddHolidayForm from "@/frontend/components/AddHolidayForm";
+import { AutoSubmitInput, AutoSubmitSelect } from "@/frontend/components/AutoSubmit";
+import { addType, deleteHoliday, deleteType, setHolidayYearly, setWeekend, setYearStart, updateType } from "@/backend/lib/actions";
+import { requireAdmin } from "@/backend/lib/auth";
+import { getConfig } from "@/backend/lib/data";
+import { DOW, MONTHS, fmtDate, leaveYearSpan, leaveYearOf, todayIso } from "@/backend/lib/dates";
+import { typeColorVar } from "@/frontend/lib/colors";
 
 export default async function SettingsPage() {
   await requireAdmin();

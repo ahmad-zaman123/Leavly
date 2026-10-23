@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useRef, useState } from "react";
-import { removeLeave, restoreLeave, type LeaveDTO } from "@/lib/actions";
-import { MONTHS, fmtDays, fmtRange, leaveDays, leaveYearLabel, leaveYearSpan, leaveYearWindow, parseDate, type WorkCalendar } from "@/lib/dates";
-import { typeColorVar } from "@/lib/colors";
+import { removeLeave, restoreLeave, type LeaveDTO } from "@/backend/lib/actions";
+import { MONTHS, fmtDays, fmtRange, leaveDays, leaveYearLabel, leaveYearSpan, leaveYearWindow, parseDate, type WorkCalendar } from "@/backend/lib/dates";
+import { typeColorVar } from "@/frontend/lib/colors";
 
 export type TypeProp = { key: string; label: string; allowance: number; colorIndex: number };
 

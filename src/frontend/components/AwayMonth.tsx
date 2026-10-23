@@ -3,9 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 import Avatar from "./Avatar";
-import type { LeaveDTO } from "@/lib/actions";
-import { DOW, MONTHS, countWorkingDays, fmtDate, fmtDays, fmtRange, isWorkingDay, isoDate, leaveDays, parseDate, type WorkCalendar } from "@/lib/dates";
-import { typeColorVar } from "@/lib/colors";
+import type { LeaveDTO } from "@/backend/lib/actions";
+import { DOW, MONTHS, countWorkingDays, fmtDate, fmtDays, fmtRange, isWorkingDay, isoDate, leaveDays, parseDate, type WorkCalendar } from "@/backend/lib/dates";
+import { typeColorVar } from "@/frontend/lib/colors";
 
 type T = { key: string; label: string; colorIndex: number };
 

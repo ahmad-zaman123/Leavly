@@ -1,8 +1,8 @@
-import DashboardApp, { type TypeProp } from "@/components/DashboardApp";
-import type { LeaveDTO } from "@/lib/actions";
-import { requireUser } from "@/lib/auth";
-import { allowanceFor, getConfig, getTeamLeaves, getUserLeaves } from "@/lib/data";
-import { leaveYearOf, todayIso } from "@/lib/dates";
+import DashboardApp, { type TypeProp } from "@/frontend/components/DashboardApp";
+import type { LeaveDTO } from "@/backend/lib/actions";
+import { requireUser } from "@/backend/lib/auth";
+import { allowanceFor, getConfig, getTeamLeaves, getUserLeaves } from "@/backend/lib/data";
+import { leaveYearOf, todayIso } from "@/backend/lib/dates";
 
 export default async function Dashboard({ searchParams }: { searchParams: Promise<{ year?: string; all?: string }> }) {
   const user = await requireUser();

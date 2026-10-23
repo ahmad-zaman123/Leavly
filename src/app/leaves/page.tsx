@@ -1,8 +1,8 @@
-import MyLeaves, { type TypeProp } from "@/components/MyLeaves";
-import type { LeaveDTO } from "@/lib/actions";
-import { requireUser } from "@/lib/auth";
-import { allowanceFor, getConfig, getUserLeaves } from "@/lib/data";
-import { leaveYearOf, todayIso } from "@/lib/dates";
+import MyLeaves, { type TypeProp } from "@/frontend/components/MyLeaves";
+import type { LeaveDTO } from "@/backend/lib/actions";
+import { requireUser } from "@/backend/lib/auth";
+import { allowanceFor, getConfig, getUserLeaves } from "@/backend/lib/data";
+import { leaveYearOf, todayIso } from "@/backend/lib/dates";
 
 export default async function LeavesPage({ searchParams }: { searchParams: Promise<{ year?: string }> }) {
   const user = await requireUser();

@@ -1,6 +1,6 @@
-import Avatar from "@/components/Avatar";
-import PasswordForm from "@/components/PasswordForm";
-import { requireUser } from "@/lib/auth";
+import Avatar from "@/frontend/components/Avatar";
+import PasswordForm from "@/frontend/components/PasswordForm";
+import { requireUser } from "@/backend/lib/auth";
 
 export default async function AccountPage() {
   const user = await requireUser();

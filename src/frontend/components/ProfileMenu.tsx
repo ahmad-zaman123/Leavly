@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Avatar from "./Avatar";
-import { logout } from "@/lib/actions";
+import { logout } from "@/backend/lib/actions";
 
 type Mode = "light" | "dark";
 

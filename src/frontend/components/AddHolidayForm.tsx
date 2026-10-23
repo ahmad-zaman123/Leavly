@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import DatePicker from "./DatePicker";
-import { addHoliday } from "@/lib/actions";
+import { addHoliday } from "@/backend/lib/actions";
 
 export default function AddHolidayForm({ weekend, holidays, today }: { weekend: number[]; holidays: string[]; today: string }) {
   const [date, setDate] = useState("");

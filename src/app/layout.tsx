@@ -1,9 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
-import "./globals.css";
-import { currentUser } from "@/lib/auth";
-import HeaderNav from "@/components/HeaderNav";
-import ThemeSwitch from "@/components/ThemeSwitch";
+import "@/frontend/styles/globals.css";
+import { currentUser } from "@/backend/lib/auth";
+import HeaderNav from "@/frontend/components/HeaderNav";
+import ThemeSwitch from "@/frontend/components/ThemeSwitch";
 
 export const metadata: Metadata = {
   title: "Leavly",
