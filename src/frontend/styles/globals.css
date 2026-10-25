@@ -2069,6 +2069,51 @@ form.req label.typechip.on {
   padding: 10px 14px;
   line-height: 1.5;
 }
+.welcome.setup {
+  display: block;
+  padding: 12px 14px;
+}
+.setup-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.setup-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.setup-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.setup-list li.done .setup-text {
+  color: var(--muted);
+}
+.setup-list li.done .setup-label {
+  text-decoration: line-through;
+}
+.setup-mark {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  border-radius: 50%;
+  border: 1.5px solid color-mix(in srgb, var(--accent) 50%, transparent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: #fff;
+}
+.setup-list li.done .setup-mark {
+  background: var(--good);
+  border-color: var(--good);
+}
 .teamtools {
   display: flex;
   gap: 8px;

@@ -1,5 +1,6 @@
 import { asc } from "drizzle-orm";
 import AddPerson from "@/frontend/components/AddPerson";
+import GettingStarted, { type SetupStep } from "@/frontend/components/GettingStarted";
 import ThisWeek from "@/frontend/components/ThisWeek";
 import { AutoSubmitSelect } from "@/frontend/components/AutoSubmit";
 import TeamTable, { type Person, type TypeCol } from "@/frontend/components/TeamTable";
@@ -62,16 +63,22 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     }));
 
   const onlyMe = people.length <= 1;
+  // The checklist stays until people and holidays are in; the last step is just a nudge to look.
+  const steps: SetupStep[] = [
+    { key: "people", label: "Add your people", done: !onlyMe, hint: "Then share the site link and each person's starting password." },
+    { key: "holidays", label: "Add this year's public holidays", done: cfg.holidays.length > 0, href: "/admin/settings" },
+    {
+      key: "year",
+      label: "Check the leave year start and weekend days",
+      done: false,
+      href: "/admin/settings",
+      hint: `Currently ${leaveYearLabel(thisYear, cfg.yearStartMonth)}.`,
+    },
+  ];
+  const setupDone = steps[0].done && steps[1].done;
   return (
     <>
-      {onlyMe ? (
-        <div className="welcome">
-          <div>
-            <b>Just you so far.</b> Add your colleagues below, then share the site link and each person's starting password. They choose their own password when
-            they first sign in.
-          </div>
-        </div>
-      ) : null}
+      {setupDone ? null : <GettingStarted steps={steps} />}
       <ThisWeek leaves={upcomingAndCurrent} types={types} holidays={cfg.holidayMap} weekend={cfg.weekend} today={today} />
       <section className="block">
         <div className="sec-head">
