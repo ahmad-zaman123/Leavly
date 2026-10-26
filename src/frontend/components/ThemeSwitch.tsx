@@ -3,12 +3,11 @@
 import { useEffect, useState } from "react";
 
 type Mode = "light" | "dark";
-const MODES: { v: Mode; label: string; icon: string }[] = [
-  { v: "light", label: "Light", icon: "☀" },
-  { v: "dark", label: "Dark", icon: "☾" },
-];
 
-/** Three-way theme switch, used inside the profile menu. */
+const SUN = "M12 4V2m0 20v-2m8-8h2M2 12h2m13.7-5.7l1.4-1.4M4.9 19.1l1.4-1.4m0-11.4L4.9 4.9m14.2 14.2l-1.4-1.4M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z";
+const MOON = "M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z";
+
+/** Sun/moon button that flips between light and dark, for the header when nobody is signed in. */
 export default function ThemeSwitch() {
   const [mode, setMode] = useState<Mode>("light");
   useEffect(() => {
@@ -16,23 +15,20 @@ export default function ThemeSwitch() {
     const cur = document.documentElement.getAttribute("data-theme");
     setMode(cur === "dark" ? "dark" : "light");
   }, []);
-  const apply = (m: Mode) => {
-    setMode(m);
+  const toggle = () => {
+    const next: Mode = mode === "dark" ? "light" : "dark";
+    setMode(next);
     try {
-      localStorage.setItem("theme", m);
+      localStorage.setItem("theme", next);
     } catch {}
-    document.documentElement.setAttribute("data-theme", m);
+    document.documentElement.setAttribute("data-theme", next);
   };
+  const label = mode === "dark" ? "Switch to light mode" : "Switch to dark mode";
   return (
-    <div className="themeswitch">
-      <span className="hint">Theme</span>
-      <div className="seg" role="group" aria-label="Theme">
-        {MODES.map((m) => (
-          <button key={m.v} type="button" className={mode === m.v ? "on" : ""} onClick={() => apply(m.v)} aria-pressed={mode === m.v}>
-            {m.icon} {m.label}
-          </button>
-        ))}
-      </div>
-    </div>
+    <button type="button" className="theme-toggle" onClick={toggle} aria-label={label} title={label}>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d={mode === "dark" ? SUN : MOON} />
+      </svg>
+    </button>
   );
 }
