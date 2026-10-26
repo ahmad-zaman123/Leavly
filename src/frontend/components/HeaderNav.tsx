@@ -31,8 +31,8 @@ export default function HeaderNav({ user }: { user: ProfileInfo }) {
           Admin
         </Link>
       ) : null}
-      <ThemeSwitch />
       <ProfileMenu user={user} />
+      <ThemeSwitch />
     </div>
   );
 }
