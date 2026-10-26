@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ProfileMenu, { type ProfileInfo } from "./ProfileMenu";
+import ThemeSwitch from "./ThemeSwitch";
 
 export default function HeaderNav({ user }: { user: ProfileInfo }) {
   const path = usePathname();
@@ -30,6 +31,7 @@ export default function HeaderNav({ user }: { user: ProfileInfo }) {
           Admin
         </Link>
       ) : null}
+      <ThemeSwitch />
       <ProfileMenu user={user} />
     </div>
   );
