@@ -58,6 +58,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </div>
         </header>
         <div className="wrap">{children}</div>
+        <script defer src="https://visitor-tracker-app.vercel.app/t.js" data-site="1589caaabf" />
       </body>
     </html>
   );
