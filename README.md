@@ -11,7 +11,7 @@
   <img src="https://img.shields.io/badge/Next.js-15-000?logo=nextdotjs&logoColor=white&style=flat-square" alt="Next.js 15" />
   <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black&style=flat-square" alt="React 19" />
   <img src="https://img.shields.io/badge/Drizzle-ORM-C5F74F?logo=drizzle&logoColor=black&style=flat-square" alt="Drizzle ORM" />
-  <img src="https://img.shields.io/badge/Postgres-Supabase-3FCF8E?logo=supabase&logoColor=white&style=flat-square" alt="Postgres / Supabase" />
+  <img src="https://img.shields.io/badge/Postgres-Neon-00E599?logo=neon&logoColor=black&style=flat-square" alt="Postgres / Neon" />
   <img src="https://img.shields.io/badge/deploy-Vercel-000?logo=vercel&logoColor=white&style=flat-square" alt="Vercel" />
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="MIT license" /></a>
 </p>
@@ -184,10 +184,10 @@ To run it against a deployed instance, seed the QA accounts from `tests/db.js` i
 | Layer          | Tech                                                                                     |
 | -------------- | ---------------------------------------------------------------------------------------- |
 | **Framework**  | Next.js 15 (App Router, server actions), React 19                                        |
-| **Database**   | Postgres with Drizzle ORM: Supabase in production, embedded PGlite for local development |
+| **Database**   | Postgres with Drizzle ORM: Neon in production, embedded PGlite for local development |
 | **Auth**       | Signed-cookie sessions (jose), bcrypt password hashing                                   |
 | **Styling**    | Hand-written CSS with light and dark theme tokens                                        |
-| **Deployment** | Vercel + Supabase                                                                        |
+| **Deployment** | Vercel + Neon                                                                           |
 
 ## 🗂️ Project structure
 
@@ -216,17 +216,15 @@ leavly/
 
 ## ☁️ Deployment
 
-The app needs a hosted Postgres. [Supabase](https://supabase.com) works well and has a free tier.
+The app needs a hosted Postgres. [Neon](https://neon.tech) works well and has a free tier. An idle database sleeps and wakes on the next visit in under a second, so it never needs restoring by hand. Any other Postgres works too, Supabase included (use its transaction pooler URL on port 6543).
 
-1. Create a Supabase project. In **Project settings → Database → Connection string** copy the **Transaction pooler** URL (port 6543). It looks like
-   `postgresql://postgres.<ref>:<password>@aws-0-<region>.pooler.supabase.com:6543/postgres`.
-   Use the pooler, not the direct host: the direct host is IPv6-only and unreachable from Vercel.
+1. Create a Neon project in the region nearest your Vercel functions (US East for Vercel's default `iad1`). Copy the **pooled** connection string, the one with `-pooler` in the host. It looks like
+   `postgresql://neondb_owner:<password>@ep-<name>-pooler.<region>.aws.neon.tech/neondb?sslmode=require`.
 2. Create the tables in it from your machine:
    ```bash
-   DATABASE_URL='postgresql://…pooler.supabase.com:6543/postgres' npm run db:push
+   DATABASE_URL='postgresql://…-pooler…neon.tech/neondb?sslmode=require' npm run db:push
    ```
 3. Import the repository in [Vercel](https://vercel.com/new) with the Next.js preset and set `DATABASE_URL` and `AUTH_SECRET`.
-   Set the function region to the one your Supabase project is in (for example `sin1` for ap-southeast-1) so every query is a short hop.
 4. Deploy, open the site, create the first account at `/register`, and add everyone else from the Admin page.
 
 ## 📄 License
