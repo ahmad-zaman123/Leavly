@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
+import { headers } from "next/headers";
 import "@/frontend/styles/globals.css";
 import { currentUser } from "@/backend/lib/auth";
 import HeaderNav from "@/frontend/components/HeaderNav";
@@ -29,12 +30,13 @@ export const dynamic = "force-dynamic";
 const themeInit = `(function(){var t=null;try{t=localStorage.getItem('theme')}catch(e){}if(t!=='light'&&t!=='dark'){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}document.documentElement.setAttribute('data-theme',t)})();`;
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
   const user = await currentUser();
   const profile = user ? { id: user.id, name: user.name, email: user.email, role: user.role } : null;
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeInit }} />
+        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: themeInit }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="stylesheet"
@@ -58,7 +60,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </div>
         </header>
         <div className="wrap">{children}</div>
-        <script defer src="https://visitor-tracker-app.vercel.app/t.js" data-site="1589caaabf" />
+        <script nonce={nonce} defer src="https://visitor-tracker-app.vercel.app/t.js" data-site="1589caaabf" />
       </body>
     </html>
   );

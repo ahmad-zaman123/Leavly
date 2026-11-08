@@ -671,15 +671,14 @@ const calTo = async (page, s) => {
   /* ---------------- 8. Theme, mobile, 404, errors ---------------- */
   await step("theme switch persists across reload", async () => {
     await sara.goto(BASE + "/");
-    await sara.click(".ptrigger");
-    await sara.click(".switch");
-    await sara.keyboard.press("Escape");
+    const theme = () => sara.evaluate(() => document.documentElement.getAttribute("data-theme"));
+    const before = await theme();
+    await sara.click(".theme-toggle");
     await sara.reload();
-    const t = await sara.evaluate(() => document.documentElement.getAttribute("data-theme"));
-    await sara.click(".ptrigger");
-    await sara.click(".switch");
-    await sara.keyboard.press("Escape");
-    if (t !== "light") throw new Error(t);
+    const after = await theme();
+    await sara.click(".theme-toggle");
+    if (after === before) throw new Error(`still ${after} after the switch and a reload`);
+    return `${before} → ${after}`;
   });
   await step("mobile 390px: no horizontal overflow on any page, sheet opens", async () => {
     const m = await ctxPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
