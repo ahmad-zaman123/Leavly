@@ -1,8 +1,10 @@
 "use server";
 
 import bcrypt from "bcryptjs";
+import { createHash } from "crypto";
 import { and, eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { db } from "@/backend/db";
 import { holidays, leaveTypes, leaves, loginAttempts, settings, users } from "@/backend/db/schema";
@@ -40,34 +42,70 @@ export async function setup(_prev: FormState, fd: FormData): Promise<FormState> 
   redirect("/");
 }
 
-const MAX_FAILURES = 5;
-const LOCK_SECONDS = 60;
+// Wrong passwords are counted per email and per network address. The address count stops one person trying a
+// few passwords on every account. Counts older than the window start again from zero.
+const LIMITS = {
+  email: { max: 5, lockSeconds: 60 },
+  ip: { max: 20, lockSeconds: 15 * 60 },
+};
+const WINDOW_MS = 15 * 60 * 1000;
+// Compared against when the email is unknown, so a reply takes as long either way and doesn't reveal who has an account.
+const NO_USER_HASH = "$2b$10$tKc71OFPC.gQRymw21z18OKU5jjdp2QlPEWPb1BAvEN2exWN1CCmC";
+
+type AttemptKind = keyof typeof LIMITS;
+
+async function clientAddressKey(): Promise<string> {
+  const h = await headers();
+  const ip = (h.get("x-forwarded-for") ?? "").split(",")[0].trim() || h.get("x-real-ip") || "unknown";
+  return "ip:" + createHash("sha256").update(ip).digest("hex").slice(0, 32);
+}
+
+async function lockedFor(key: string, now: number): Promise<number> {
+  const row = await db.query.loginAttempts.findFirst({ where: eq(loginAttempts.email, key) });
+  if (!row?.lockedUntil) return 0;
+  const left = Date.parse(row.lockedUntil) - now;
+  return left > 0 ? Math.ceil(left / 1000) : 0;
+}
+
+/** Counts one wrong password for the key. Returns the attempts left, or 0 when it is now locked. */
+async function recordFailure(key: string, kind: AttemptKind, now: number): Promise<number> {
+  const { max, lockSeconds } = LIMITS[kind];
+  const row = await db.query.loginAttempts.findFirst({ where: eq(loginAttempts.email, key) });
+  const stale = !row || now - Date.parse(row.updatedAt) > WINDOW_MS || (row.lockedUntil && Date.parse(row.lockedUntil) <= now);
+  const failures = (stale ? 0 : row.failures) + 1;
+  const lockedUntil = failures >= max ? new Date(now + lockSeconds * 1000).toISOString() : null;
+  const updatedAt = new Date(now).toISOString();
+  await db
+    .insert(loginAttempts)
+    .values({ email: key, failures, lockedUntil, updatedAt })
+    .onConflictDoUpdate({ target: loginAttempts.email, set: { failures, lockedUntil, updatedAt } });
+  return lockedUntil ? 0 : max - failures;
+}
+
+const tooMany = (wait: number) => `Too many failed attempts. Try again in ${waitText(wait)}.`;
+const waitText = (s: number) => (s >= 90 ? `${Math.ceil(s / 60)} minutes` : `${s} second${s === 1 ? "" : "s"}`);
 
 export async function login(_prev: FormState, fd: FormData): Promise<FormState> {
   const email = str(fd, "email").toLowerCase();
   const password = String(fd.get("password") ?? "");
   if (!email) return { error: "Enter your email." };
   const now = Date.now();
-  const attempt = await db.query.loginAttempts.findFirst({ where: eq(loginAttempts.email, email) });
-  if (attempt?.lockedUntil && Date.parse(attempt.lockedUntil) > now) {
-    const wait = Math.ceil((Date.parse(attempt.lockedUntil) - now) / 1000);
-    return { error: `Too many failed attempts. Try again in ${wait} second${wait === 1 ? "" : "s"}.` };
-  }
+  const address = await clientAddressKey();
+  const wait = Math.max(await lockedFor(email, now), await lockedFor(address, now));
+  if (wait) return { error: tooMany(wait) };
+
   const u = await db.query.users.findFirst({ where: eq(users.email, email) });
-  const ok = !!u && (await bcrypt.compare(password, u.passwordHash));
+  const ok = (await bcrypt.compare(password, u?.passwordHash ?? NO_USER_HASH)) && !!u;
   if (!ok) {
-    const failures = (attempt?.lockedUntil && Date.parse(attempt.lockedUntil) <= now ? 0 : (attempt?.failures ?? 0)) + 1;
-    const lockedUntil = failures >= MAX_FAILURES ? new Date(now + LOCK_SECONDS * 1000).toISOString() : null;
-    await db
-      .insert(loginAttempts)
-      .values({ email, failures, lockedUntil, updatedAt: new Date(now).toISOString() })
-      .onConflictDoUpdate({ target: loginAttempts.email, set: { failures, lockedUntil, updatedAt: new Date(now).toISOString() } });
-    if (lockedUntil) return { error: `Too many failed attempts. Try again in ${LOCK_SECONDS} seconds.` };
-    const left = MAX_FAILURES - failures;
+    const [leftForEmail, leftForAddress] = [await recordFailure(email, "email", now), await recordFailure(address, "ip", now)];
+    if (!leftForEmail) return { error: tooMany(LIMITS.email.lockSeconds) };
+    if (!leftForAddress) return { error: tooMany(LIMITS.ip.lockSeconds) };
+    const left = leftForEmail;
     return { error: `Wrong email or password.${left <= 2 ? ` ${left} attempt${left === 1 ? "" : "s"} left before a short lock.` : ""}` };
   }
   if (!u.active) return { error: "This account has been deactivated. Ask your admin." };
-  if (attempt) await db.delete(loginAttempts).where(eq(loginAttempts.email, email));
+  // Only the email's count is cleared. The address count isn't, so signing in to your own account can't reset it.
+  await db.delete(loginAttempts).where(eq(loginAttempts.email, email));
   await createSession(u.id, { mustChangePassword: u.mustChangePassword });
   redirect(u.mustChangePassword ? "/welcome" : "/");
 }

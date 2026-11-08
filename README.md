@@ -130,7 +130,7 @@ Removing a leave is instant, with an Undo toast. Deactivating a person asks firs
 
 ### 🔒 Private by default
 
-Members see only their own leave. Admins see everyone. Sessions are signed cookies, passwords are bcrypt hashed, and new people must choose their own password on first sign-in. Five wrong passwords lock an email for a minute.
+Members see only their own leave. Admins see everyone. Sessions are signed cookies, passwords are bcrypt hashed, and new people must choose their own password on first sign-in. Five wrong passwords lock an account for a minute, and 20 from one network address lock that address for 15 minutes, so nobody can try a few passwords on every account. Five wrong passwords lock an email for a minute.
 
 ### 🔑 Google sign-in
 

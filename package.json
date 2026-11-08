@@ -14,7 +14,7 @@
   "dependencies": {
     "@electric-sql/pglite": "^0.5.11",
     "bcryptjs": "^3.0.2",
-    "drizzle-orm": "^0.44.2",
+    "drizzle-orm": "^0.45.4",
     "jose": "^6.0.11",
     "next": "^15.3.4",
     "pg": "^8.16.3",

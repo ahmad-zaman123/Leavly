@@ -52,7 +52,7 @@ export const leaves = pgTable("leaves", {
   createdAt: text("created_at").notNull(),
 });
 
-/** Failed sign-in counter per email, so a password cannot be guessed by brute force. */
+/** Failed sign-in counters, keyed by email or by a hash of the network address (`ip:…`), so passwords can't be guessed by brute force. */
 export const loginAttempts = pgTable("login_attempts", {
   email: text("email").primaryKey(),
   failures: integer("failures").notNull().default(0),

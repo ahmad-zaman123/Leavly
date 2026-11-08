@@ -474,6 +474,32 @@ const calTo = async (page, s) => {
     await fresh.context().close();
     if (!ok) throw new Error("re-login failed");
   });
+  await step("login: one address trying many accounts is locked out, others are not", async () => {
+    // Each page claims its own address, the way Vercel reports the visitor's address to the app.
+    const from = (ip) => ctxPage({ extraHTTPHeaders: { "x-forwarded-for": ip } });
+    const guess = async (pg, email, pw) => {
+      await pg.fill("#auth-email", email);
+      await pg.fill("#auth-password", pw);
+      await Promise.all([pg.waitForResponse((r) => r.request().method() === "POST"), pg.click("button[type=submit]")]);
+      await pg.waitForTimeout(300);
+      return ((await pg.$(".msg.error")) ? (await pg.textContent(".msg.error")).trim() : "");
+    };
+    const pg = await from("203.0.113.77");
+    await pg.goto(BASE + "/login");
+    let last = "";
+    // 4 tries each on 5 accounts: never enough to lock one account, but 20 from one address.
+    for (const n of [1, 2, 3, 4, 5]) for (let i = 1; i <= 4; i++) last = await guess(pg, `nobody${n}@example.com`, "nope" + i);
+    if (!/Too many.*minutes/.test(last)) throw new Error("not locked: " + last);
+    const right = await guess(pg, QA.member.email, QA.member.password);
+    await pg.context().close();
+    if (!/Too many/.test(right)) throw new Error("the right password got through from a locked address: " + right);
+    const other = await from("198.51.100.23");
+    await login(other, QA.member.email, QA.member.password);
+    const url = other.url();
+    await other.context().close();
+    if (url.includes("/login")) throw new Error("another address was locked out too");
+    return "locked after 20 wrong guesses across 5 accounts";
+  });
   await step("login: five wrong passwords lock the account for a minute", async () => {
     const pg = await ctxPage();
     await pg.goto(BASE + "/login");
