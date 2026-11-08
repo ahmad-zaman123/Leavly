@@ -31,6 +31,8 @@ const run = (cmd, args, opts = {}) => {
     env,
     stdio: ["ignore", "pipe", "pipe"],
     shell: process.platform === "win32",
+    // Its own process group, so stopping it also stops the next-server that npx starts.
+    detached: process.platform !== "win32",
   });
   server.stdout.on("data", (d) => process.env.E2E_VERBOSE && process.stdout.write(d));
   server.stderr.on("data", (d) => process.stderr.write(d));
@@ -47,7 +49,10 @@ const run = (cmd, args, opts = {}) => {
     const r = spawnSync("node", [path.join(__dirname, "e2e.js")], { cwd: root, stdio: "inherit", env: { ...env, BASE: base } });
     code = r.status ?? 1;
   } finally {
-    server.kill();
+    try {
+      if (process.platform === "win32") server.kill();
+      else process.kill(-server.pid, "SIGTERM");
+    } catch {}
     await db.cleanup().catch((e) => console.error("cleanup failed:", e.message));
   }
   process.exit(code);
